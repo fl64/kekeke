@@ -24,7 +24,9 @@ import (
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
+	"k8s.io/kubernetes/pkg/apis/coordination"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -34,8 +36,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
-	coordination "k8s.io/kubernetes/pkg/apis/coordination/v1"
 
 	"fencing-controller/internal/controller"
 	//+kubebuilder:scaffold:imports
@@ -47,7 +47,7 @@ var (
 )
 
 func init() {
-	utilruntime.Must(coordination.AddToScheme(scheme))
+	//utilruntime.Must(coordinationv1.AddToScheme(scheme))
 	utilruntime.Must(clientgoscheme.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 
@@ -61,6 +61,10 @@ func main() {
 			fmt.Println(k.Group, k.Version, k.Kind)
 		}
 	}
+
+	fmt.Println(coordination.SchemeGroupVersion)
+	fmt.Println(scheme.KnownTypes(coordination.SchemeGroupVersion))
+
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
