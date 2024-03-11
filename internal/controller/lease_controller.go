@@ -69,7 +69,9 @@ func (r *LeaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	}
 
 	nodeName := lease.Spec.HolderIdentity
-	//renewTime := lease.Spec.RenewTime
+	renewTime := lease.Spec.RenewTime
+
+	fmt.Println(*nodeName, renewTime.String())
 
 	node := &corev1.Node{}
 
@@ -109,6 +111,8 @@ func (r *LeaseReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *LeaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
+
+	// add spec nodeName to indexer
 	if err := mgr.GetFieldIndexer().IndexField(
 		context.TODO(),
 		&corev1.Pod{},
@@ -119,6 +123,7 @@ func (r *LeaseReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		}); err != nil {
 		return err
 	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&coordination.Lease{}, builder.WithPredicates(
 			predicate.NewPredicateFuncs(func(obj client.Object) bool {
